@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Linq;
 using System.Windows.Automation.Peers;
@@ -663,10 +665,25 @@ namespace System.Windows.Controls
 			}
 		}
 
-		protected override void OnItemsChanged(NotifyCollectionChangedEventArgs e)
-		{
-			MultiSelectTreeView parentTV;
+        /// <summary>
+        /// Create a direct subscription to the collection instead of relying on the internal mechanisms of <see cref="ItemsControl"/>.
+        /// This avoids the flood of <see cref="NotifyCollectionChangedAction.Reset"/> events on tree population created by WPF.
+        /// </summary>
+        /// <param name="oldValue"></param>
+        /// <param name="newValue"></param>
+        protected override void OnItemsSourceChanged(IEnumerable oldValue, IEnumerable newValue)
+        {
+            if (newValue is INotifyCollectionChanged notifyCollection)
+            {
+                notifyCollection.CollectionChanged += (a, e) => OwnItemsChanged(e);
+                //notifyCollection.CollectionChanged += (a, e) => base.OnItemsChanged(e);
+            }
+            base.OnItemsSourceChanged(oldValue, newValue);
+        }
 
+        private void OwnItemsChanged(NotifyCollectionChangedEventArgs e)
+        {
+			MultiSelectTreeView parentTV;
 			switch (e.Action)
 			{
 				case NotifyCollectionChangedAction.Remove:
@@ -696,7 +713,7 @@ namespace System.Windows.Controls
 					parentTV = ParentTreeView;
 					if (parentTV == null)
 						parentTV = lastParentTreeView;
-					if (parentTV != null)
+					if (parentTV != null && parentTV.SelectedItems.Count > 0)
 					{
 						var selection = new object[parentTV.SelectedItems.Count];
 						parentTV.SelectedItems.CopyTo(selection, 0);
@@ -713,8 +730,6 @@ namespace System.Windows.Controls
 					}
 					break;
 			}
-
-			base.OnItemsChanged(e);
 		}
 
 		#endregion Protected methods
