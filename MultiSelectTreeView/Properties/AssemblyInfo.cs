@@ -5,13 +5,12 @@ using System.Runtime.InteropServices;
 using System.Windows;
 
 [assembly: AssemblyProduct("MultiSelectTreeView WPF control")]
-[assembly: AssemblyTitle("WPF control library with a TreeView supporting multiple selection.")]
 
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyCopyright("© 2012–2017 Yves Goergen, Goroll")]
 
 // IMPORTANT: When changing the version number, also update the NuGet package and the version history below.
-[assembly: AssemblyVersion("1.0.9.0")]
+[assembly: AssemblyVersion("1.0.10.0")]
 
 [assembly: ComVisible(false)]
 [assembly: ThemeInfo(
@@ -24,6 +23,9 @@ using System.Windows;
 )]
 
 // Change history:
+//
+// 1.0.10 2018-08-16
+// * Optimized performance of refresh of tree items
 //
 // 1.0.9 - 2017-03-20
 // * Improved contrast of inactive selection on Windows 7 and Windows 10
